@@ -164,8 +164,10 @@ CREATE TABLE IF NOT EXISTS metrics_history (
   ip_v6 TEXT DEFAULT '0',
   boot_time TEXT DEFAULT '',
   net_rx_monthly REAL DEFAULT 0,
-  net_tx_monthly REAL DEFAULT 0
+  net_tx_monthly REAL DEFAULT 0,
+  FOREIGN KEY (server_id) REFERENCES servers(id)
 );
+-- 模拟外键
 
 -- 插入系统配置
 `;

@@ -396,8 +396,8 @@ export const upgradeDatabase = async (apiIndex = 0) => {
   return result.data
 }
 
-export const rebuildDatabase = async (apiIndex = 0) => {
-  const result = await http.postByIndex('/rebuild', {}, apiIndex, { autoRedirect: false })
+export const clearHistory = async (apiIndex = 0) => {
+  const result = await http.postByIndex('/clearHistory', {}, apiIndex, { autoRedirect: false })
   if (result.error) {
     if (result.status === 401) {
       return { success: false, error: 'Unauthorized' }

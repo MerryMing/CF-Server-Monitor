@@ -1,4 +1,4 @@
-import { getAllServers, getLatestMetricsCache, setLatestMetricsCache, getMetricsHistoryCache, setMetricsHistoryCache, getCacheDuration } from '../utils/cache.js';
+import { getAllServers, getLatestMetricsCache, setLatestMetricsCache, getMetricsHistoryCache, setMetricsHistoryCache, getCacheDuration, clearAllCaches } from '../utils/cache.js';
 import { saveSiteOptions, debug, getSettingByKey } from '../utils/settings.js';
 import { ensureServerOptimization, buildHistoryId, getServerHistoryInfo, getHistoryIdRange } from './indexOptimization.js';
 import { addHistoryColumns, ensureHistoryIndex, isHistoryOptimized } from './updateDatabase.js';
@@ -113,8 +113,8 @@ export async function initDatabase(db) {
   }
 }
 
-export async function rebuildDatabase(db) {
-  debug('开始执行数据库重建...');
+export async function clearHistory(db) {
+  debug('开始清空历史数据...');
   
   try {
     await db.prepare(`DROP TABLE IF EXISTS metrics_history`).run();
@@ -123,15 +123,13 @@ export async function rebuildDatabase(db) {
     await db.prepare(`DROP TABLE IF EXISTS metrics_history_old`).run();
     debug('✅ 已删除 metrics_history_old 表');
     
-    await db.prepare(`DROP TABLE IF EXISTS servers`).run();
-    debug('✅ 已删除 servers 表');
-    
-    await db.prepare(`DROP TABLE IF EXISTS settings`).run();
-    debug('✅ 已删除 settings 表');
-    
     dbInitialized = false;
     
     await initDatabase(db);
+
+    await saveSiteOptions(db, { history_id_optimized: 'true' });
+
+    await clearAllCaches(db);
     
     debug('✅ 数据库重建完成');
     
@@ -140,7 +138,7 @@ export async function rebuildDatabase(db) {
       message: 'databaseRebuiltSuccess'
     };
   } catch (e) {
-    console.error('❌ 数据库重建失败:', e);
+    console.error('❌ 数据库清理失败:', e);
     return {
       success: false,
       message: 'databaseRebuiltFailed',

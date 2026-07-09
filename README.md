@@ -2,7 +2,7 @@
 
 一个基于 Cloudflare Workers + D1 + Durable Objects 的多服务器监控探针系统，支持实时监控、历史数据查看、延迟追踪、地图展示等功能。兼容主流Linux系统，Alpine Linux，OpenWrt，Windows系统。**演示地址**：<https://demo.huilang.me/>
 
-**当前版本：V2.7.8**
+**当前版本：V2.7.9 Beta**
 
 > [!IMPORTANT]
 > **🚨 紧急安全/性能更新 (v2.7.8)**
@@ -36,6 +36,7 @@ cat /etc/config/cf-probe/config.conf
 <details>
 <summary>更新记录</summary>
 
+- V2.7.9 Beta 修改数据库结构，减少一半D1写入消耗，其他bug修复
 - V2.7.8 修复月度任务导致数据表索引丢失的严重 Bug
 - V2.7.7 添加GitHub Page部署支持，添加飞书，Bark通知支持
 - V2.7.6 添加多站点支持包括验证码登录等，添加Windows PowerShell无依赖安装脚本，一些安全优化
@@ -503,9 +504,9 @@ Windows 系统（Python 版）
    - 点击「Upgrade Database」按钮
    - 确认升级操作
    - 系统会自动执行数据库升级脚本
-2. **重建数据库**：清空并重建整个数据库（⚠️ 危险操作）
-   - 点击「Rebuild Database」按钮
-   - 确认重建操作（此操作将删除所有数据）
+2. **清空历史数据**：清空所有历史数据（⚠️ 危险操作）
+   - 点击「清空历史数据」按钮
+   - 确认操作（此操作将删除所有历史数据）
    - 系统会清空并重新初始化数据库
 
 > **注意**：

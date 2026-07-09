@@ -514,9 +514,9 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label danger-label">⚠️ {{ trans.rebuildDatabase }}</label>
-                <p class="text-muted mb-2">{{ trans.rebuildDesc }}</p>
-                <button @click="openDbModal('rebuild')" class="btn btn-red btn-lg" :disabled="dbLoading">🗑️ {{ trans.rebuildDatabase }}</button>
+                <label class="form-label danger-label">⚠️ {{ trans.clearHistory }}</label>
+                <p class="text-muted mb-2">{{ trans.clearHistoryDesc }}</p>
+                <button @click="openDbModal('clearHistory')" class="btn btn-red btn-lg" :disabled="dbLoading">🗑️ {{ trans.clearHistory }}</button>
               </div>
             </div>
           </div>
@@ -766,17 +766,17 @@
       <div id="dbModal" class="modal-overlay" :class="{ active: showDbModal }">
         <div class="modal-dialog">
           <div class="modal-header">
-            <div class="modal-title">$ {{ dbOperation === 'rebuild' ? 'DROP DATABASE' : 'ALTER DATABASE' }}</div>
+            <div class="modal-title">$ {{ dbOperation === 'clearHistory' ? 'CLEAR HISTORY' : 'ALTER DATABASE' }}</div>
             <button class="modal-close" @click="closeDbModal" :disabled="dbLoading">✕</button>
           </div>
 
-          <div v-if="dbOperation === 'rebuild'" class="mb-4">
+          <div v-if="dbOperation === 'clearHistory'" class="mb-4">
             <div class="flex-center-gap-sm mb-3">
               <span class="danger-icon text-xl">⚠️</span>
               <span class="danger-label">{{ trans.dangerOperation }}</span>
             </div>
             <p class="text-secondary text-sm line-height-1-6">
-              {{ trans.rebuildWarning }}
+              {{ trans.clearHistoryWarning }}
             </p>
           </div>
 
@@ -801,14 +801,14 @@
             </div>
           </div>
 
-          <div class="modal-footer flex-justify-between">
+          <div v-if="!(dbResult && dbResult.success)" class="modal-footer flex-justify-between">
             <button 
               v-if="!dbResult" 
-              @click="dbOperation === 'rebuild' ? handleRebuildDatabase() : handleUpgradeDatabase()" 
+              @click="dbOperation === 'clearHistory' ? handleClearHistory() : handleUpgradeDatabase()" 
               class="btn btn-red" 
               :disabled="dbLoading"
             >
-              {{ dbLoading ? (dbOperation === 'rebuild' ? trans.rebuilding : trans.upgrading) : (dbOperation === 'rebuild' ? trans.confirmRebuild : trans.upgradeDatabase) }}
+              {{ dbLoading ? (dbOperation === 'clearHistory' ? trans.clearing : trans.upgrading) : (dbOperation === 'clearHistory' ? trans.confirmClear : trans.upgradeDatabase) }}
             </button>
             <button @click="closeDbModal" class="btn" :disabled="dbLoading">{{ trans.cancel }}</button>
           </div>
@@ -957,7 +957,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TerminalHeader from '../components/TerminalHeader.vue'
 import Footer from '../components/Footer.vue'
-import { adminApi, login, logout as apiLogout, formatBytes, upgradeDatabase, rebuildDatabase, getFlagRegionCode, getApiBases } from '../utils/api'
+import { adminApi, login, logout as apiLogout, formatBytes, upgradeDatabase, clearHistory, getFlagRegionCode, getApiBases } from '../utils/api'
 import { hasMultipleApiBases } from '../utils/config.js'
 import { t, currentLang, useTranslation } from '../utils/i18n'
 import { http } from '../utils/http'
@@ -1507,7 +1507,10 @@ const saveSettings = async () => {
 
 const addServer = async () => {
     const name = newServerName.value.trim()
-    if (!name) return alert(trans.value.enterServerName)
+    if (!name) {
+      validationError.value = trans.value.enterServerName
+      return
+    }
 
     try {
       const result = await adminApiForSite({ action: 'add', name, server_group: newServerGroup.value })
@@ -1810,13 +1813,13 @@ const handleUpgradeDatabase = async () => {
   }
 }
 
-const handleRebuildDatabase = async () => {
-  dbOperation.value = 'rebuild'
+const handleClearHistory = async () => {
+  dbOperation.value = 'clearHistory'
   dbLoading.value = true
   dbResult.value = null
   
   try {
-    const result = await rebuildDatabase(selectedApiIndex.value)
+    const result = await clearHistory(selectedApiIndex.value)
     dbResult.value = result
   } catch (e) {
     dbResult.value = { success: false, error: e.message }

@@ -1,4 +1,5 @@
 待办事项：
+- [ ] 合并getAllServers函数
 - [x] 上报后，插入新的history_partition_id字段
 - [x] 保证metrics_history表是优化状态
 - [x] settings新增history_id_optimized字段，如果已优化，自动改成true，其他全局调用判断是否优化，走缓存和清除缓存
