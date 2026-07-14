@@ -342,7 +342,7 @@ export const fetchServerDetail = async (id, apiIndex = 0) => {
 }
 
 export const fetchAllHistory = async (id, hours, apiIndex = 0) => {
-  const result = await http.getByIndex(`/api/history/all?id=${id}&hours=${hours}`, apiIndex)
+  const result = await http.getByIndex(`/api/history/all?id=${id}&hours=${hours}`, apiIndex, { autoRedirect: false })
   if (result.error) {
     const error = new Error(result.error)
     error.code = result.code

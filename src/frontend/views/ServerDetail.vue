@@ -821,6 +821,13 @@ const loadAllHistory = async (hours) => {
       })
     })
   } catch (e) {
+    if (e && e.status === 401) {
+      showLoginModal.value = true
+      currentHours.value = 0.167
+      historyLoaded.value = true
+      return
+    }
+
     if (e && e.message === 'databaseUpgradeRequired') {
       if (!databaseUpgradeAlertShown) {
         databaseUpgradeAlertShown = true
